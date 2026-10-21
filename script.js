@@ -216,14 +216,14 @@ fillRibbon(); document.addEventListener('content:ready', fillRibbon);
   });
 
   // глубина на первом экране: лес, луна и герои двигаются с разной скоростью
-  var hero = document.querySelector('.hero'), night = document.querySelector('.night'), moon = document.querySelector('.moon'), ph = document.querySelector('.hero-photo'), vis = true, mx = 0, my = 0, raf = 0;
+  var hero = document.querySelector('.hero'), night = document.querySelector('.night') || document.createElement('i'), moon = document.querySelector('.moon') || document.createElement('i'), ph = document.querySelector('.hero-photo'), vis = true, mx = 0, my = 0, raf = 0;
   new IntersectionObserver(function (es) { vis = es[0].isIntersecting; }).observe(hero);
   function paint() {
     raf = 0; if (!vis) return;
     var y = scrollY;
     night.style.transform = 'translate3d(' + (mx * -10) + 'px,' + (y * .35) + 'px,0) scale(1.08)';
     moon.style.transform = 'translate3d(' + (mx * -20) + 'px,' + (y * .2) + 'px,0)';
-    ph.style.transform = 'translate3d(' + (mx * 12) + 'px,' + (y * -.06) + 'px,0)';
+    var img = ph.querySelector('img'); if (img && innerWidth > 900) img.style.transform = 'translate3d(' + (mx * -14) + 'px,' + (y * .25) + 'px,0) scale(1.06)';
   }
   function ask() { if (!raf) raf = requestAnimationFrame(paint); }
   addEventListener('scroll', ask, { passive: true });

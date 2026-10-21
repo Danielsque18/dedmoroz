@@ -594,3 +594,53 @@ h1 em,h2 em,.panel h2 em,.tb h2 em,.contacts h2 em{color:inherit!important;-webk
 /* ссылка на портфолио в подвале, как у SEDOY */
 .foot-credit{color:var(--v600);font-weight:600;text-decoration:none;border-bottom:1px solid rgba(90,52,198,.3);transition:border-color .2s,color .2s}
 .foot-credit:hover{color:var(--v700);border-color:currentColor}
+
+/* ===== первый экран: живое фото Снегурочки у ёлки на весь экран ===== */
+.hero{min-height:min(780px,calc(100vh - 90px))}
+.night,.moon,.halo{display:none!important}
+.hero-grid{grid-template-columns:minmax(0,560px) minmax(0,1fr)!important;min-height:min(720px,calc(100vh - 120px))!important;align-items:center!important}
+.hero-in{padding:40px 0 110px!important}
+.hero-photo{position:absolute!important;inset:0;margin:0!important;z-index:-1;animation:heroIn 1.6s cubic-bezier(.2,.8,.2,1) both!important;overflow:hidden}
+@keyframes heroIn{from{opacity:0;transform:scale(1.06)}}
+.hero-photo>img{width:100%!important;height:100%!important;max-height:none!important;object-fit:cover!important;object-position:70% 30%;filter:none!important;-webkit-mask-image:none!important;mask-image:none!important}
+.hero-photo::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(90deg,rgba(20,7,49,.94) 0%,rgba(20,7,49,.82) 30%,rgba(20,7,49,.35) 55%,rgba(20,7,49,0) 72%),
+             linear-gradient(0deg,rgba(20,7,49,.9) 0%,rgba(20,7,49,0) 32%),
+             linear-gradient(180deg,rgba(20,7,49,.55) 0%,rgba(20,7,49,0) 22%)}
+.hero-photo .badge-row{left:auto!important;right:5%;bottom:20%!important;top:auto!important}
+.hero .snow{z-index:3}.hero .sparks{z-index:3}
+
+@media (max-width:900px){
+  .hero{min-height:0;padding-top:0!important}
+  .hero-grid{display:flex!important;min-height:0!important}
+  .hero-photo{position:relative!important;inset:auto;order:1!important;z-index:0;width:calc(100% + 32px)!important;margin:0 -16px!important;height:min(400px,95vw)}
+  .hero-photo>img{object-position:80% 28%}
+  .hero-photo::after{background:linear-gradient(0deg,#140731 0%,rgba(20,7,49,.55) 30%,rgba(20,7,49,0) 55%),linear-gradient(180deg,rgba(20,7,49,.5) 0%,rgba(20,7,49,0) 20%)}
+  .hero-photo .badge-row{right:auto;left:16px!important;bottom:auto!important;top:16px!important}
+  .chip{order:2!important;position:relative;z-index:4;margin-top:-64px!important}
+  .hero h1{order:3!important;position:relative;z-index:4}
+  .quick-prices{order:4!important;margin-top:18px!important}
+  .hero .cta{order:5!important}
+}
+@media (min-width:701px) and (max-width:900px){.hero-photo{height:440px;max-width:none!important;width:calc(100% + 32px)!important}}
+@media (min-width:901px){
+  .hero-grid{position:static!important}
+  .hero-in{position:relative;z-index:4}
+  .hero-photo{top:0;right:0;bottom:0;left:0}
+}
+@media (min-width:901px){
+  .hero-grid{display:flex!important;align-items:center}
+  .hero-in{max-width:560px;flex:none}
+}
+/* фото — прямой фон всего первого экрана (вынесено из сетки) */
+@media (min-width:901px){
+  .hero-photo{position:absolute!important;top:0;right:0;bottom:0;left:0;z-index:-1}
+  .hero-grid{position:relative!important;z-index:4}
+}
+@media (max-width:900px){
+  .hero{display:flex;flex-direction:column}
+  .hero-photo{order:0!important}
+  .hero-grid{order:1;position:relative;z-index:4}
+  .chip{margin-top:-64px!important}
+}
+@media (min-width:901px){.hero-photo{height:100%!important;width:100%!important}}
