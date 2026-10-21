@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Управление сайтом — Сибирская служба Деда Мороза</title>
+<link rel="icon" href="../img/logo.png" type="image/png">
+<link rel="stylesheet" href="../fonts/fonts.css">
+<link rel="stylesheet" href="admin.css?v=20261021k">
+</head>
+<body>
+
+<div class="login" id="login">
+  <form class="login-box" id="loginForm">
+    <img src="../img/logo.png" alt="" width="72" height="74">
+    <h1>Управление сайтом</h1>
+    <p class="login-demo" id="loginDemo" hidden>Демо-версия: изменения сохраняются только в этом браузере и видны только вам.</p>
+    <label>Пароль <input type="password" id="pass" autocomplete="current-password" required></label>
+    <button class="b b-red" type="submit">Войти</button>
+    <p class="err" id="loginErr"></p>
+  </form>
+</div>
+
+<div class="app" id="app" hidden>
+  <header class="bar">
+    <b class="bar-t">Управление сайтом</b>
+    <span class="state" id="state">Все изменения сохранены</span>
+    <a class="b b-line" href="../" target="_blank" rel="noopener">Открыть сайт</a>
+    <button class="b b-red" id="save" type="button">Сохранить</button>
+  </header>
+  <p class="demo-note" id="demoNote" hidden>Демо-версия: всё, что вы сохраните, видно только в этом браузере. На настоящем сайте изменения увидят все посетители.</p>
+  <nav class="tabs" id="tabs"></nav>
+  <main class="panel" id="panel"></main>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="../data/content.js?v=20261021k"></script>
+<script src="admin.js?v=20261021k"></script>
+</body>
+</html>
