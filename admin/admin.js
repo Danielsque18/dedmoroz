@@ -9,20 +9,20 @@
 
   // ---------- что можно править: вкладки названы так же, как блоки на сайте ----------
   var TABS = [
-    { t: 'Первый экран', hint: 'Самый верх сайта: заголовок, фото в золотой арке. Сезон «2026–2027 открыт» и цена «от …» считаются сами.', f: [
+    { t: 'Первый экран', hint: 'Самый верх сайта: заголовок и герои справа. Большое фото — без фона (вырезанное), иначе будет видна рамка снимка; если нужно новое — пришлите фото Даниилу, он вырежет. Сезон «2026–2027 открыт» и цена «от …» считаются сами.', f: [
       ['hero.title', 'Заголовок', 'text'],
       ['hero.lead', 'Текст под заголовком', 'area', 'Фраза «Поздравляем с 25 декабря по 2 января» добавится сама из вкладки «Цены».'],
-      ['hero.photo', 'Фото в арке', 'img', 'hero.photo_pos'],
-      ['hero.round', 'Круглое фото', 'img'],
-      ['hero.sticker', 'Красная наклейка на фото', 'text']
+      ['hero.photo', 'Большое фото', 'img', 'hero.photo_pos'],
+      ['hero.round', 'Маленькое круглое фото', 'img'],
+      ['hero.sticker', 'Надпись у круглого фото', 'text']
     ]},
-    { t: 'Цифры', hint: 'Тёмная полоса под первым экраном. Четвёртая ячейка — отсчёт до Нового года, она считается сама.', f: [
+    { t: 'Цифры', hint: 'Белые карточки под первым экраном. Четвёртая ячейка — отсчёт до Нового года, она считается сама.', f: [
       ['facts', 'Ячейки', 'list', [['b', 'Крупно', 'text'], ['s', 'Подпись', 'text']], { fixed: 3 }]
     ]},
     { t: 'О нас', f: [
       ['about.title', 'Заголовок', 'text'],
       ['about.text', 'Текст', 'area'],
-      ['about.badge', 'Красный кружок на фото', 'text', 'Например: «с 2005 года». Это же попадёт в строку над главным заголовком.'],
+      ['about.badge', 'Золотая плашка на фото', 'text', 'Например: «с 2005 года». Это же попадёт в строку над главным заголовком.'],
       ['about.photo', 'Фото', 'img', 'about.photo_pos'],
       ['about.pluses', 'Преимущества', 'list', [['title', 'Коротко (жирным)', 'text'], ['text', 'Подробно', 'area']]]
     ]},
@@ -32,9 +32,9 @@
       ['prices.intro', 'Текст над таблицей', 'area'],
       ['prices.rows', 'Строки таблицы', 'list', [['dates', 'Даты', 'text']], { rows: true }],
       ['season.note', 'Подсказка под таблицей', 'text'],
-      ['prices.incl_title', 'Заголовок карточки справа', 'text'],
-      ['prices.incl', 'Что входит в поздравление', 'strings'],
-      ['prices.incl_photo', 'Фото в карточке', 'img', 'prices.incl_pos']
+      ['prices.incl_title', 'Заголовок блока «Что входит»', 'text'],
+      ['prices.incl', 'Плитки «Что входит в поздравление»', 'strings'],
+      ['prices.incl_photo', 'Фото в блоке «Как проходит»', 'img', 'prices.incl_pos']
     ]},
     { t: 'Как проходит', f: [
       ['how.title', 'Заголовок', 'text'],
@@ -98,13 +98,14 @@
     function src(s) { return /^(data:|https?:)/.test(s) ? s : '../' + s; }
     function draw() {
       var s = obj[key] || '', pos = pk ? (posObj[pk] || '50% 50%') : '50% 50%';
-      wrap.innerHTML = '<span>' + esc(label) + '</span><div class="img-prev">' +
+      var cut = /(^|\/)cut-/.test(s);   // вырезанное фото без фона — показываем целиком на тёмном фоне, как на сайте
+      wrap.innerHTML = '<span>' + esc(label) + '</span><div class="img-prev' + (cut ? ' cut' : '') + '">' +
         '<figure class="ph"><img src="' + esc(src(s)) + '" style="object-position:' + esc(pos) + '"><figcaption>на телефоне</figcaption></figure>' +
         '<figure class="pc"><img src="' + esc(src(s)) + '" style="object-position:' + esc(pos) + '"><figcaption>на компьютере</figcaption></figure></div>' +
-        (pk ? '<small>Нажмите на фото в то место, которое должно быть видно всегда (например, на лицо).</small>' : '') +
+        (pk && !cut ? '<small>Нажмите на фото в то место, которое должно быть видно всегда (например, на лицо).</small>' : '') +
         '<div class="img-btns"><label class="b b-sm">Загрузить другое фото<input type="file" accept="image/jpeg,image/png,image/webp" hidden></label></div>';
       wrap.querySelector('input[type=file]').onchange = function (e) { upload(e.target.files[0], function (path) { obj[key] = path; if (pk) posObj[pk] = ''; mark(); draw(); }); };
-      if (pk) wrap.querySelectorAll('.img-prev img').forEach(function (im) {
+      if (pk && !cut) wrap.querySelectorAll('.img-prev img').forEach(function (im) {
         im.onclick = function (e) {
           var r = im.getBoundingClientRect();
           posObj[pk] = Math.round((e.clientX - r.left) / r.width * 100) + '% ' + Math.round((e.clientY - r.top) / r.height * 100) + '%';

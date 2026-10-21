@@ -56,6 +56,18 @@
   }
   function list(el, items, fn) { if (el) el.innerHTML = items.map(fn).join(''); }
 
+  // картинка из нейросети для карточки (img/ai/<имя>-<номер>.webp); пока файла нет — остаётся иконка
+  function ai(name, i) {
+    return '<img class="ai" src="img/ai/' + name + '-' + (i + 1) + '.webp" alt="" onload="this.parentNode.classList.add(\'ai-on\')" onerror="this.remove()">';
+  }
+
+  // последнее слово заголовка — цветом, как на референсе
+  function accent(el, t) {
+    if (!el) return;
+    var m = /^(.*\s)(\S+)$/.exec(String(t || '').trim());
+    el.innerHTML = m ? esc(m[1]) + '<em>' + esc(m[2]) + '</em>' : esc(t);
+  }
+
   function render(c) {
     var s = season(), k = c.contacts, mob = k.phone_mobile;
     var wa = 'https://wa.me/' + digits(k.whatsapp || mob), tg = 'https://t.me/+' + digits(k.telegram || mob), vk = 'https://vk.me/' + k.vk;
@@ -66,67 +78,94 @@
     $('.hero .kicker').textContent = 'Омск · ' + c.about.badge + ' · ' + (s.open ? 'сезон ' + s.label + ' открыт' : 'сезон ' + s.label + ' — скоро');
     $('.hero h1').textContent = c.hero.title;
     $('.hero .lead').textContent = c.hero.lead + ' Поздравляем ' + period + '.';
-    $('.price-from').innerHTML = 'Поздравление — <b>от ' + rub(min) + '</b>';
-    setImg($('.arch img'), c.hero.photo, c.hero.photo_pos);
-    setImg($('.hero-photo .round'), c.hero.round);
-    $('.hero-photo figcaption').textContent = c.hero.sticker;
+    setImg($('.hero-photo > img'), c.hero.photo, c.hero.photo_pos);
+    setImg($('.hero .round'), c.hero.round);
+    $('.sticker').textContent = c.hero.sticker;
 
     // телефоны и мессенджеры везде
-    document.querySelectorAll('a.btn-red[href^="tel"], .fab a[href^="tel"]').forEach(function (a) {
-      a.href = tel(mob);
-      if (a.closest('.hero')) a.textContent = 'Позвонить · ' + mob;
-      else if (a.closest('#contacts')) a.textContent = mob;
-    });
+    document.querySelectorAll('a.btn-gold[href^="tel"], .fab a[href^="tel"]').forEach(function (a) { a.href = tel(mob); });
+    $('.btn-big span').textContent = mob;
     document.querySelectorAll('a[href*="wa.me"]').forEach(function (a) { a.href = wa; });
     document.querySelectorAll('a[href*="t.me/"]').forEach(function (a) { a.href = tg; });
     document.querySelectorAll('a[href*="vk.me/"]').forEach(function (a) { a.href = vk; });
-    var top = $('.top-tel'); top.href = tel(k.phone_city || mob); top.textContent = k.phone_city || mob;
+    var top = $('.top-tel'); top.href = tel(k.phone_city || mob); $('.top-tel span').textContent = k.phone_city || mob;
 
     // цифры (последняя ячейка — отсчёт до Нового года, его считает script.js)
     var f = document.querySelectorAll('.facts > div');
     c.facts.slice(0, 3).forEach(function (x, i) { if (f[i]) f[i].innerHTML = '<b>' + esc(x.b) + '</b><span>' + esc(x.s) + '</span>'; });
 
     // о нас
-    $('.about h2').textContent = c.about.title;
-    $('.about .txt').textContent = c.about.text;
+    accent($('#about h2'), c.about.title);
+    $('#about .txt').textContent = c.about.text;
     setImg($('.about-pic img'), c.about.photo, c.about.photo_pos);
-    $('.badge').innerHTML = esc(c.about.badge).replace(' ', '<br>');
-    list($('.pluses'), c.about.pluses, function (p) { return '<li><b>' + esc(p.title) + '.</b> ' + esc(p.text) + '</li>'; });
+    $('.badge').textContent = c.about.badge;
+    list($('.pluses'), c.about.pluses, function (p, i) { return '<li>' + ai('plus', i) + '<b>' + esc(p.title) + '</b><p>' + esc(p.text) + '</p></li>'; });
 
-    // цены
-    $('#prices .kicker').textContent = 'Домашнее поздравление · ' + s.label;
-    $('#prices .txt').textContent = c.prices.intro;
+    // что входит
+    accent($('#program h2'), c.prices.incl_title);
+    $('#program .txt').textContent = c.prices.intro;
+    list($('.tiles'), c.prices.incl, function (t, i) { return '<li>' + ai('tile', i) + esc(t) + '</li>'; });
+
+    // цены: декабрь · день со временем (тёмная колонка) · январь
+    $('.season-label').textContent = 'Сезон ' + s.label;
+    $('#prices .hint').textContent = c.season.note;
     var has = function (p) { return /\d/.test(String(p || '')); };   // строки без цены (ещё не заполнены) не показываем
-    list($('.prices'), c.prices.rows.filter(function (r) {
+    var rows = c.prices.rows.filter(function (r) {
       return r.dates && (has(r.price) || (r.slots || []).some(function (x) { return has(x.price); }));
-    }), function (r) {
-      var note = r.note || weekendNote(r.dates, s.start);
-      var slots = (r.slots || []).filter(function (x) { return has(x.price); });
-      if (slots.length) {
-        return '<div class="pr pr-31"><span class="d31">' + esc(r.dates) + '</span><div class="t31">' +
-          slots.map(function (x) { return '<div><span>' + esc(x.time) + '</span><b>' + rub(x.price) + '</b></div>'; }).join('') + '</div></div>';
-      }
-      return '<div class="pr"><span>' + esc(r.dates) + (note ? ' <small>' + esc(note) + '</small>' : '') + '</span><b>' + rub(r.price) + '</b></div>';
     });
-    $('.hint').textContent = '❄ ' + c.season.note;
-    $('.incl h3').textContent = c.prices.incl_title;
-    setImg($('.incl img'), c.prices.incl_photo, c.prices.incl_pos);
-    list($('.incl ul'), c.prices.incl, function (t) { return '<li>' + esc(t) + '</li>'; });
+    var li = function (a, b, note) { return '<li><span>' + esc(a) + (note ? ' <small>' + esc(note) + '</small>' : '') + '</span><b>' + rub(b) + '</b></li>'; };
+    var col = function (title, head, items, cls) {
+      return items ? '<div class="pcol' + (cls || '') + '"><h3>' + esc(title) + '</h3><div class="th"><span>' + head + '</span><span>30 минут</span></div><ul>' + items + '</ul></div>' : '';
+    };
+    var dec = '', jan = '', mid = '';
+    rows.forEach(function (r) {
+      var slots = (r.slots || []).filter(function (x) { return has(x.price); });
+      if (slots.length) { mid += col(r.dates, 'Время', slots.map(function (x) { return li(x.time, x.price); }).join(''), ' pcol-31'); return; }
+      var row = li(r.dates, r.price, r.note || weekendNote(r.dates, s.start));
+      if (/января/.test(r.dates)) jan += row; else dec += row;
+    });
+    // карточка цен на первом экране: декабрь · 31 декабря · январь (минимальная цена в каждой группе)
+    var grp = { dec: [], d31: [], jan: [] }, lab = { dec: [], d31: [], jan: [] };
+    rows.forEach(function (r) {
+      var slots = (r.slots || []).filter(function (x) { return has(x.price); });
+      var k = slots.length ? 'd31' : /января/.test(r.dates) ? 'jan' : 'dec';
+      (slots.length ? slots.map(function (x) { return x.price; }) : [r.price]).forEach(function (p) { grp[k].push(+String(p).replace(/\D/g, '')); });
+      lab[k].push(r.dates);
+    });
+    function span(list) {   // «25, 28 и 29 декабря», «30 декабря» → «25–30 декабря»
+      var nums = [], month = '';
+      list.forEach(function (t) { var m = /(декабря|января)/.exec(t); if (m) month = m[1]; (t.match(/\d{1,2}/g) || []).forEach(function (d) { nums.push(+d); }); });
+      if (!nums.length) return list[0] || '';
+      var lo = Math.min.apply(null, nums), hi = Math.max.apply(null, nums);
+      return (lo === hi ? lo : lo + '–' + hi) + ' ' + month;
+    }
+    var qp = [['dec', ''], ['d31', ' class="qp-31"'], ['jan', '']].filter(function (g) { return grp[g[0]].length; });
+    $('.qp-rows').innerHTML = qp.map(function (g) {
+      var k = g[0], lo = Math.min.apply(null, grp[k]);
+      return '<span' + g[1] + '><small>' + esc(span(lab[k])) + '</small><b>от ' + rub(lo) + '</b></span>';
+    }).join('');
+    $('.qp-rows').style.gridTemplateColumns = 'repeat(' + qp.length + ',minmax(0,1fr))';
+    $('.qp-season').textContent = s.label;
+
+    var box = $('.price-box');
+    box.innerHTML = col('Декабрь', 'Дата', dec) + mid + col('Январь', 'Дата', jan);
+    box.style.gridTemplateColumns = box.children.length === 3 ? '' : 'repeat(' + box.children.length + ',minmax(0,1fr))';
 
     // как проходит
-    $('#how h2').textContent = c.how.title;
-    list($('.steps'), c.how.steps, function (x, i) { return '<li><span>' + (i + 1) + '</span><div><b>' + esc(x.title) + '</b>' + esc(x.text) + '</div></li>'; });
+    accent($('#how h2'), c.how.title);
+    setImg($('.how-pic img'), c.prices.incl_photo, c.prices.incl_pos);
+    list($('.steps'), c.how.steps, function (x, i) { return '<li>' + ai('step', i) + '<b>' + esc(x.title) + '</b><p>' + esc(x.text) + '</p></li>'; });
     list($('.tips ul'), c.how.tips, function (t) { return '<li>' + esc(t) + '</li>'; });
 
     // герои
-    $('#heroes h2').textContent = c.heroes.title;
-    $('#heroes .txt').textContent = c.heroes.text;
-    list($('.gallery'), c.heroes.photos, function (p, i) {
-      return '<img src="' + esc(p.src) + '" alt="' + esc(p.alt) + '" loading="lazy"' + (i === 0 ? ' class="g-wide"' : '') + (p.pos ? ' style="object-position:' + esc(p.pos) + '"' : '') + '>';
+    accent($('#heroes h2'), c.heroes.title);
+    $('.stage-txt').textContent = c.heroes.text;
+    list($('.gallery'), c.heroes.photos, function (p) {
+      return '<img src="' + esc(p.src) + '" alt="' + esc(p.alt) + '" loading="lazy"' + (p.pos ? ' style="object-position:' + esc(p.pos) + '"' : '') + '>';
     });
 
     // отзывы
-    $('#reviews h2').textContent = c.reviews.title;
+    accent($('#reviews h2'), c.reviews.title);
     list($('.revs'), c.reviews.items, function (r) { return '<blockquote><p>' + esc(r.text) + '</p>' + (r.author ? '<cite>' + esc(r.author) + '</cite>' : '') + '</blockquote>'; });
 
     // вопросы
@@ -134,16 +173,16 @@
     setImg($('.faq-pic'), c.faq.photo);
 
     // контакты
-    var rows = [['Телефон', k.phone_city, tel(k.phone_city)], ['Мобильный', mob, tel(mob)]];
-    if (k.phone_boss) rows.push(['Руководитель', k.phone_boss + (k.boss_name ? ' (' + k.boss_name + ')' : ''), tel(k.phone_boss)]);
-    if (k.email) rows.push(['Почта', k.email, 'mailto:' + k.email]);
-    if (k.show_office && k.office) rows.push(['Офис', k.office, 'https://yandex.ru/maps/?text=' + encodeURIComponent('Омск, ' + k.office)]);
-    rows.push(['Группа', 'vk.com/' + k.vk, 'https://vk.com/' + k.vk]);
-    list($('.clist'), rows.filter(function (r) { return r[1]; }), function (r) {
+    var cl = [['Телефон', k.phone_city, tel(k.phone_city)], ['Мобильный', mob, tel(mob)]];
+    if (k.phone_boss) cl.push(['Руководитель', k.phone_boss + (k.boss_name ? ' (' + k.boss_name + ')' : ''), tel(k.phone_boss)]);
+    if (k.email) cl.push(['Почта', k.email, 'mailto:' + k.email]);
+    if (k.show_office && k.office) cl.push(['Офис', k.office, 'https://yandex.ru/maps/?text=' + encodeURIComponent('Омск, ' + k.office)]);
+    cl.push(['Группа', 'vk.com/' + k.vk, 'https://vk.com/' + k.vk]);
+    list($('.clist'), cl.filter(function (r) { return r[1]; }), function (r) {
       var ext = /^https/.test(r[2]) ? ' target="_blank" rel="noopener"' : '';
       return '<li><span>' + r[0] + '</span><a href="' + esc(r[2]) + '"' + ext + '>' + esc(r[1]) + '</a></li>';
     });
-    document.querySelectorAll('a[href^="https://vk.com/"]').forEach(function (a) { if (a.closest('#reviews')) a.href = 'https://vk.com/' + k.vk; });
+    document.querySelectorAll('#reviews a[href^="https://vk.com/"]').forEach(function (a) { a.href = 'https://vk.com/' + k.vk; });
 
     document.dispatchEvent(new CustomEvent('content:ready'));
   }
