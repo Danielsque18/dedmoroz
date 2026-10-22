@@ -69,47 +69,48 @@ document.documentElement.classList.add('js');
   draw(); setInterval(draw, 60 * 60 * 1000);
 })();
 
-// Наши герои: большое фото + счётчик 01/9 + миниатюры (как «Коллекция образов» на референсе)
+// Наши герои: карусель — фото одной высоты в своей форме, текущее по центру
 (function () {
-  var g = document.getElementById('gallery'), pic = document.querySelector('.stage-pic'), big = pic.querySelector('img');
-  var cnt = document.querySelector('.count'), title = document.querySelector('.stage-title'), bar = document.querySelector('.stage-bar i');
-  var i = 0;
+  var car = document.getElementById('car'), track = car.querySelector('.car-track'), g = document.getElementById('gallery');
+  var cnt = document.querySelector('.car-count'), title = document.querySelector('.car-title'), i = 0, items = [];
   function pad(n) { return (n < 10 ? '0' : '') + n; }
-  function show(n) {
-    var th = g.querySelectorAll('img'); if (!th.length) return;
-    i = (n + th.length) % th.length;
-    var t = th[i];
-    big.style.opacity = 0;
-    setTimeout(function () { big.src = t.src; big.alt = t.alt; big.style.opacity = 1; big.classList.remove('kb'); void big.offsetWidth; big.classList.add('kb'); }, 180);
-    pic.style.setProperty('--bg', 'url("' + t.src + '")');
-    cnt.innerHTML = '<b>' + pad(i + 1) + '</b>/' + th.length;
-    title.textContent = t.alt;
-    bar.style.width = ((i + 1) / th.length * 100) + '%';
-    th.forEach(function (x, k) { x.classList.toggle('on', k === i); });
-    if (t.scrollIntoView && g.scrollWidth > g.clientWidth) g.scrollTo({ left: t.offsetLeft - g.clientWidth / 2 + t.clientWidth / 2, behavior: 'smooth' });
+  function build() {
+    track.innerHTML = [].map.call(g.querySelectorAll('img'), function (im, k) {
+      return '<button type="button" class="car-item" data-k="' + k + '"><img src="' + im.getAttribute('src') + '" alt="' + im.alt.replace(/"/g, '&quot;') + '"' + (k > 2 ? ' loading="lazy"' : '') + '></button>';
+    }).join('');
+    items = [].slice.call(track.children); show(0, true);
   }
-  // вертикальный снимок — рамка повыше (на телефоне)
-  big.addEventListener('load', function () { pic.classList.toggle('tall', big.naturalHeight > big.naturalWidth); });
-  document.querySelector('.stage .prev').addEventListener('click', function () { show(i - 1); });
-  document.querySelector('.stage .next').addEventListener('click', function () { show(i + 1); });
-  g.addEventListener('click', function (e) { var t = e.target.closest('img'); if (t) show([].indexOf.call(g.querySelectorAll('img'), t)); });
-  // свайп по большому фото на телефоне
-  var x0 = null;
-  pic.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
-  pic.addEventListener('touchend', function (e) {
-    if (x0 == null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null;
-    if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1));
+  function show(n, instant) {
+    if (!items.length) return;
+    i = (n + items.length) % items.length;
+    items.forEach(function (x, k) { x.classList.toggle('on', k === i); x.setAttribute('aria-current', k === i ? 'true' : 'false'); });
+    var it = items[i];
+    car.scrollTo({ left: it.offsetLeft - (car.clientWidth - it.offsetWidth) / 2, behavior: instant ? 'auto' : 'smooth' });
+    cnt.innerHTML = '<b>' + pad(i + 1) + '</b>/' + items.length;
+    title.textContent = it.querySelector('img').alt;
+  }
+  window.DM_CAR_NEXT = function () { show(i + 1); };
+  document.querySelector('.car-prev').addEventListener('click', function () { show(i - 1); });
+  document.querySelector('.car-next').addEventListener('click', function () { show(i + 1); });
+  // нажали на соседнее — оно становится текущим; на текущее — открываем целиком
+  var lb = document.getElementById('lb'), lbi = lb.querySelector('img');
+  track.addEventListener('click', function (e) {
+    var b = e.target.closest('.car-item'); if (!b) return;
+    var k = +b.dataset.k; if (k !== i) return show(k);
+    lbi.src = b.querySelector('img').src; lbi.alt = b.querySelector('img').alt; lb.hidden = false;
   });
-  show(0);
-  document.addEventListener('content:ready', function () { show(0); });
-
-  // фото на весь экран
-  var lb = document.getElementById('lb'), img = lb.querySelector('img');
-  big.addEventListener('click', function () { img.src = big.src; img.alt = big.alt; lb.hidden = false; });
-  big.style.cursor = 'zoom-in';
   function close() { lb.hidden = true; }
-  lb.addEventListener('click', function (e) { if (e.target !== img) close(); });
+  lb.addEventListener('click', function (e) { if (e.target !== lbi) close(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+  // свайп
+  var x0 = null;
+  car.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+  car.addEventListener('touchend', function (e) { if (x0 == null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 40) show(i + (dx < 0 ? 1 : -1)); });
+  car.addEventListener('wheel', function (e) { if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) e.preventDefault(); }, { passive: false });
+  addEventListener('resize', function () { show(i, true); });
+  // высота у фото задана в CSS, ширина приходит после загрузки — перецентрировать
+  track.addEventListener('load', function () { show(i, true); }, true);
+  build(); document.addEventListener('content:ready', build);
 })();
 
 // Стрелка у отзывов
@@ -181,10 +182,12 @@ document.addEventListener('content:ready', function () { splitH1(); stagger(); }
 // лента фото между блоками: те же фото, что в «Наших героях», бесконечно едут влево
 function fillRibbon() {
   var r = document.querySelector('.ribbon-in'); if (!r) return;
-  var imgs = [].map.call(document.querySelectorAll('#gallery img'), function (i) { return '<img src="' + i.src + '" alt="" loading="lazy">'; }).join('');
+  // каждое фото один раз (без повторов по адресу); второй круг нужен только для бесшовной прокрутки
+  var seen = {}, list = [].filter.call(document.querySelectorAll('#gallery img'), function (i) { var k = i.getAttribute('src'); if (seen[k]) return false; seen[k] = 1; return true; });
+  var imgs = list.map(function (i) { return '<img src="' + i.src + '" alt="" loading="lazy">'; }).join('');
   r.innerHTML = imgs + imgs;
 }
-fillRibbon(); document.addEventListener('content:ready', fillRibbon);
+
 
 // ---------- «живой» сайт ----------
 (function () {
@@ -242,7 +245,7 @@ fillRibbon(); document.addEventListener('content:ready', fillRibbon);
   }, { threshold: .4 }).observe(document.querySelector('.facts'));
 
   // слайдер героев листается сам; если человек листает сам — пауза 12 секунд
-  var stage = document.querySelector('.stage'), next = stage.querySelector('.next'), pause = 0, stOn = false;
+  var stage = document.getElementById('car'), next = { click: function () { window.DM_CAR_NEXT && window.DM_CAR_NEXT(); } }, pause = 0, stOn = false;
   new IntersectionObserver(function (es) { stOn = es[0].isIntersecting; }).observe(stage);
   ['pointerdown', 'touchstart', 'mouseenter'].forEach(function (ev) { document.querySelector('#heroes').addEventListener(ev, function () { pause = Date.now() + 12000; }, { passive: true }); });
   setInterval(function () { if (stOn && Date.now() > pause && !document.hidden) next.click(), pause = 0; }, 5000);
@@ -257,4 +260,26 @@ fillRibbon(); document.addEventListener('content:ready', fillRibbon);
     var end = revs.scrollLeft + revs.clientWidth >= revs.scrollWidth - 4;
     revs.scrollTo({ left: end ? 0 : revs.scrollLeft + card.offsetWidth + 16, behavior: 'smooth' });
   }, 6000);
+})();
+
+
+// календарь цен: нажали на дату → окошко с готовым сообщением в WhatsApp (ничего не сохраняется)
+(function () {
+  var sheet = document.getElementById('sheet'); if (!sheet) return;
+  var last = null;
+  function open(b) {
+    var d = b.dataset.d, w = b.dataset.w, t = b.dataset.t, p = b.dataset.p;
+    document.getElementById('sheetK').textContent = w;
+    document.getElementById('sheetT').textContent = d + (t ? ', ' + t : '');
+    document.getElementById('sheetP').innerHTML = 'Поздравление 30 минут — <b>' + p + '</b>';
+    var msg = 'Здравствуйте! Хотим пригласить Деда Мороза и Снегурочку ' + d + ' (' + w + ')' + (t ? ', ' + t : '') + (t ? '. Это время ещё свободно?' : '. Подскажите, пожалуйста, какое время свободно?');
+    document.getElementById('sheetWa').href = (window.DM_WA || 'https://wa.me/79040746409') + '?text=' + encodeURIComponent(msg);
+    document.getElementById('sheetCall').href = window.DM_TEL || 'tel:+79040746409';
+    last = b; sheet.hidden = false; requestAnimationFrame(function () { sheet.classList.add('on'); });
+    sheet.querySelector('.sheet-x').focus();
+  }
+  function close() { sheet.classList.remove('on'); setTimeout(function () { sheet.hidden = true; }, 250); if (last) last.focus(); }
+  document.getElementById('cal').addEventListener('click', function (e) { var b = e.target.closest('button[data-d]'); if (b) open(b); });
+  sheet.addEventListener('click', function (e) { if (e.target === sheet || e.target.closest('.sheet-x')) close(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !sheet.hidden) close(); });
 })();

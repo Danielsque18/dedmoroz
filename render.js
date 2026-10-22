@@ -151,6 +151,33 @@
     box.innerHTML = col('Декабрь', 'Дата', dec) + mid + col('Январь', 'Дата', jan);
     box.style.gridTemplateColumns = box.children.length === 3 ? '' : 'repeat(' + box.children.length + ',minmax(0,1fr))';
 
+    // календарь: каждый праздничный день — плитка с днём недели и ценой; 31 декабря — по времени
+    var days = [];
+    rows.forEach(function (r) {
+      var mm = /(декабря|января)/.exec(r.dates); if (!mm) return;
+      var month = MONTHS[mm[1]], year = month === 11 ? s.start : s.start + 1;
+      var slots = (r.slots || []).filter(function (x) { return has(x.price); });
+      String(r.dates).replace(/(\d{1,2})\s*[–—-]\s*(\d{1,2})|(\d{1,2})/g, function (_, a, b, c1) {
+        var list = []; if (c1) list.push(+c1); else for (var d = +a; d <= +b; d++) list.push(d);
+        list.forEach(function (d) { days.push({ date: new Date(year, month, d), d: d, mon: mm[1], price: r.price, slots: slots }); });
+      });
+    });
+    days.sort(function (a, b) { return a.date - b.date; });
+    var WD = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'], WDF = ['воскресенье', 'понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота'];
+    var cal = $('#cal');
+    if (cal && days.length) {
+      cal.innerHTML = days.map(function (x) {
+        var w = x.date.getDay(), we = w === 0 || w === 6, data = ' data-d="' + x.d + ' ' + x.mon + '" data-w="' + WDF[w] + '"';
+        if (x.slots.length) {
+          return '<div class="day day-big"><div class="day-h"><b>' + x.d + '</b><span>' + x.mon + '<small>' + WDF[w] + '</small></span></div><div class="day-slots">' +
+            x.slots.map(function (sl) { return '<button type="button" class="slot"' + data + ' data-t="' + esc(sl.time) + '" data-p="' + rub(sl.price) + '"><span>' + esc(sl.time) + '</span><b>' + rub(sl.price) + '</b></button>'; }).join('') + '</div></div>';
+        }
+        return '<button type="button" class="day' + (we ? ' we' : '') + '"' + data + ' data-p="' + rub(x.price) + '"><small>' + WD[w] + '</small><b>' + x.d + '</b><span>' + x.mon.slice(0, 3) + '</span><i>' + rub(x.price) + '</i></button>';
+      }).join('');
+      $('#prices').classList.add('has-cal');
+    }
+    window.DM_WA = 'https://wa.me/' + digits(k.whatsapp || mob); window.DM_TEL = tel(mob);
+
     // как проходит
     accent($('#how h2'), c.how.title);
     setImg($('.how-pic img'), c.prices.incl_photo, c.prices.incl_pos);
@@ -159,7 +186,7 @@
 
     // герои
     accent($('#heroes h2'), c.heroes.title);
-    $('.stage-txt').textContent = c.heroes.text;
+    $('.car-txt').textContent = c.heroes.text;
     list($('.gallery'), c.heroes.photos, function (p) {
       return '<img src="' + esc(p.src) + '" alt="' + esc(p.alt) + '" loading="lazy"' + (p.pos ? ' style="object-position:' + esc(p.pos) + '"' : '') + '>';
     });

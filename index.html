@@ -7,12 +7,12 @@
 <meta name="description" content="Заказать Деда Мороза и Снегурочку на дом в Омске. Работаем с 2005 года. Поздравления с 25 декабря по 2 января, от 4 500 ₽. Тел. 34-64-09, 8-904-074-64-09.">
 <meta property="og:title" content="Сибирская служба Деда Мороза — Омск">
 <meta property="og:description" content="Дед Мороз и Снегурочка придут к вам домой. С 2005 года. От 4 500 ₽.">
-<meta property="og:image" content="https://danielsque18.github.io/dedmoroz/img/hero-sneg.jpg">
+<meta property="og:image" content="https://danielsque18.github.io/dedmoroz/img/hero-sneg.jpg?v=2">
 <meta property="og:url" content="https://danielsque18.github.io/dedmoroz/">
 <meta property="og:type" content="website">
 <meta name="theme-color" content="#1c0b3f">
-<link rel="stylesheet" href="fonts/fonts.css?v=20261022n">
-<link rel="stylesheet" href="style.css?v=20261022n">
+<link rel="stylesheet" href="fonts/fonts.css?v=20261022v">
+<link rel="stylesheet" href="style.css?v=20261022v">
 <link rel="icon" href="img/logo.png" type="image/png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"EntertainmentBusiness","name":"Сибирская служба Деда Мороза","description":"Дед Мороз и Снегурочка на дом в Омске, с 2005 года","address":{"@type":"PostalAddress","addressLocality":"Омск","streetAddress":"пр-кт Комарова, 21/2, офис 13"},"telephone":["+7 3812 34-64-09","+7 904 074-64-09"],"email":"sibdedmoroz55@gmail.com","priceRange":"4500–7500 ₽","sameAs":["https://vk.com/dedmoroz55omsk"]}</script>
 </head>
@@ -56,7 +56,7 @@
   <div class="sparks" aria-hidden="true"></div>
   <figure class="hero-photo">
     <span class="halo" aria-hidden="true"></span>
-    <img src="img/hero-sneg.jpg" alt="Снегурочка «Сибирской службы Деда Мороза» у ёлки" width="2000" height="1013" fetchpriority="high">
+    <img src="img/hero-sneg.jpg?v=2" alt="Снегурочка «Сибирской службы Деда Мороза» у ёлки" width="2000" height="1333" fetchpriority="high">
     <figcaption class="badge-row"><img class="round" src="img/sneg-gold.jpg" alt="" width="44" height="44"><span class="sticker">Только наши актёры</span></figcaption>
   </figure>
   <div class="hero-grid">
@@ -115,6 +115,8 @@
       <li><span>2 января <small>суббота</small></span><b>4 500 ₽</b></li>
     </ul></div>
   </div>
+  <div class="cal" id="cal" aria-label="Календарь цен"></div>
+  <p class="cal-hint"><svg><use href="#i-snow"/></svg><span>Нажмите на дату — подготовим сообщение, останется только отправить</span></p>
   <div class="cta cta-c">
     <a href="tel:+79040746409" class="btn btn-gold"><svg><use href="#i-phone"/></svg><span>Позвонить и выбрать время</span></a>
     <a href="https://wa.me/79040746409" class="btn btn-soft" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Написать в WhatsApp</span></a>
@@ -145,21 +147,14 @@
   <div class="head head-c">
     <h2><em>Наши</em> сказочные герои</h2>
   </div>
-  <div class="stage">
-    <div class="stage-card">
-      <div class="stage-nav">
-        <span class="count"><b>01</b>/9</span>
-        <button class="prev" aria-label="Предыдущее фото"><svg><use href="#i-arrow"/></svg></button>
-        <button class="next" aria-label="Следующее фото"><svg><use href="#i-arrow"/></svg></button>
-      </div>
-      <div><h3 class="stage-title">Дед Мороз и три Снегурочки</h3>
-      <p class="txt stage-txt">Только наши актёры — никаких фото из интернета. Снегурочки Настенька, Полиночка и Машенька и наши Дед Морозы.</p>
-      <p class="stage-tip">Нажмите на фото, чтобы открыть его целиком</p></div>
-      <div class="stage-bar"><i></i></div>
-    </div>
-    <div class="stage-pic"><img src="img/trio.jpg" alt="Дед Мороз и три Снегурочки"></div>
+  <p class="txt car-txt">Только наши актёры — никаких фото из интернета. Снегурочки Настенька, Полиночка и Машенька и наши Дед Морозы.</p>
+  <div class="car" id="car" aria-roledescription="карусель" aria-label="Фото наших героев"><div class="car-track"></div></div>
+  <div class="car-bar">
+    <button class="car-prev" type="button" aria-label="Предыдущее фото"><svg><use href="#i-arrow"/></svg></button>
+    <div class="car-info"><span class="car-count"><b>01</b>/9</span><span class="car-title">Дед Мороз и три Снегурочки</span></div>
+    <button class="car-next" type="button" aria-label="Следующее фото"><svg><use href="#i-arrow"/></svg></button>
   </div>
-  <div class="gallery" id="gallery">
+  <div class="gallery" id="gallery" hidden>
     <img src="img/trio.jpg" alt="Дед Мороз и три Снегурочки" loading="lazy">
     <img src="img/sneg-gold.jpg" alt="Снегурочка у ёлки" loading="lazy">
     <img src="img/ded-snow.jpg" alt="Дед Мороз в снегу" loading="lazy">
@@ -167,8 +162,6 @@
     <img src="img/pair-tree.jpg" alt="Дед Мороз и Снегурочка у ёлки" loading="lazy">
     <img src="img/sneg-white.jpg" alt="Снегурочка в белом" loading="lazy">
     <img src="img/ded-home.jpg" alt="Дед Мороз" loading="lazy">
-    <img src="img/sneg-tree.jpg" alt="Снегурочка" loading="lazy">
-    <img src="img/sneg-gifts.jpg" alt="Снегурочка с подарками" loading="lazy">
   </div>
 </section>
 
@@ -202,9 +195,6 @@
     <div class="tb-pic"><img src="img/ai/troika.webp" alt="Дед Мороз на тройке" onload="this.closest('section').hidden=false" onerror="this.closest('section').remove()"></div>
   </div>
 </section>
-
-<!-- ЛЕНТА ФОТО -->
-<div class="ribbon" aria-hidden="true"><div class="ribbon-in"></div></div>
 
 <!-- КАК ПРОХОДИТ -->
 <section id="how" class="sec" data-reveal>
@@ -307,6 +297,20 @@
   <p class="made">Демо-версия · <a href="https://danielsque18.github.io/portfolio/" class="foot-credit" target="_blank" rel="noopener">Сайт — Даниил Демьянов</a></p>
 </footer>
 
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetT">
+  <div class="sheet-box">
+    <button class="sheet-x" type="button" aria-label="Закрыть">×</button>
+    <p class="sheet-k" id="sheetK"></p>
+    <h3 id="sheetT"></h3>
+    <p class="sheet-p" id="sheetP"></p>
+    <div class="sheet-btns">
+      <a class="btn btn-gold" id="sheetCall" href="tel:+79040746409"><svg><use href="#i-phone"/></svg><span>Позвонить</span></a>
+      <a class="btn btn-wa" id="sheetWa" href="https://wa.me/79040746409" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg><span>Написать в WhatsApp</span></a>
+    </div>
+    <p class="sheet-note">Сообщение уже написано — останется нажать «отправить». Сайт ничего не сохраняет.</p>
+  </div>
+</div>
+
 <div class="lb" id="lb" hidden><button class="lb-x" aria-label="Закрыть">×</button><img alt=""></div>
 
 <div class="fab">
@@ -315,8 +319,8 @@
   <a href="https://wa.me/79040746409" target="_blank" rel="noopener" class="fab-wa"><svg><use href="#i-wa"/></svg>WhatsApp</a>
 </div>
 
-<script src="data/content.js?v=20261022n"></script>
-<script src="render.js?v=20261022n"></script>
-<script src="script.js?v=20261022n"></script>
+<script src="data/content.js?v=20261022v"></script>
+<script src="render.js?v=20261022v"></script>
+<script src="script.js?v=20261022v"></script>
 </body>
 </html>
