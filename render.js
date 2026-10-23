@@ -58,7 +58,7 @@
 
   // картинка из нейросети для карточки (img/ai/<имя>-<номер>.webp); пока файла нет — остаётся иконка
   function ai(name, i) {
-    return '<img class="ai" src="img/ai/' + name + '-' + (i + 1) + '.webp" alt="" onload="this.parentNode.classList.add(\'ai-on\')" onerror="this.remove()">';
+    return '<img class="ai" src="img/ai/' + name + '-' + (i + 1) + '.webp?v=2" alt="" onload="this.parentNode.classList.add(\'ai-on\')" onerror="this.remove()">';
   }
 
   // последнее слово заголовка — цветом, как на референсе
@@ -70,14 +70,13 @@
 
   function render(c) {
     var s = season(), k = c.contacts, mob = k.phone_mobile;
-    var wa = 'https://wa.me/' + digits(k.whatsapp || mob), tg = 'https://t.me/+' + digits(k.telegram || mob), vk = 'https://vk.me/' + k.vk;
-    var period = 'с ' + c.season.from + ' по ' + c.season.to;
+    var wa = 'https://wa.me/' + digits(k.whatsapp || mob), vk = 'https://vk.me/' + k.vk;
     var min = minPrice(c.prices.rows);
 
     // первый экран
     $('.hero .kicker').textContent = 'Омск · ' + c.about.badge + ' · ' + (s.open ? 'сезон ' + s.label + ' открыт' : 'сезон ' + s.label + ' — скоро');
     $('.hero h1').textContent = c.hero.title;
-    $('.hero .lead').textContent = c.hero.lead + ' Поздравляем ' + period + '.';
+    $('.hero .lead').textContent = c.hero.lead;   // по просьбе Насти — без дат
     setImg($('.hero-photo > img'), c.hero.photo, c.hero.photo_pos);
     setImg($('.hero .round'), c.hero.round);
     $('.sticker').textContent = c.hero.sticker;
@@ -86,7 +85,8 @@
     document.querySelectorAll('a.btn-gold[href^="tel"], .fab a[href^="tel"]').forEach(function (a) { a.href = tel(mob); });
     $('.btn-big span').textContent = mob;
     document.querySelectorAll('a[href*="wa.me"]').forEach(function (a) { a.href = wa; });
-    document.querySelectorAll('a[href*="t.me/"]').forEach(function (a) { a.href = tg; });
+    // Telegram у Насти нет; MAX показываем, только когда в админке есть ссылка
+    document.querySelectorAll('.max-link').forEach(function (a) { if (k.max) { a.href = k.max; a.hidden = false; } else a.hidden = true; });
     document.querySelectorAll('a[href*="vk.me/"]').forEach(function (a) { a.href = vk; });
     var top = $('.top-tel'); top.href = tel(k.phone_city || mob); $('.top-tel span').textContent = k.phone_city || mob;
 
@@ -101,14 +101,10 @@
     $('.badge').textContent = c.about.badge;
     list($('.pluses'), c.about.pluses, function (p, i) { return '<li>' + ai('plus', i) + '<b>' + esc(p.title) + '</b><p>' + esc(p.text) + '</p></li>'; });
 
-    // что входит
-    accent($('#program h2'), c.prices.incl_title);
-    $('#program .txt').textContent = c.prices.intro;
-    list($('.tiles'), c.prices.incl, function (t, i) { return '<li>' + ai('tile', i) + esc(t) + '</li>'; });
-
     // цены: декабрь · день со временем (тёмная колонка) · январь
     $('.season-label').textContent = 'Сезон ' + s.label;
     $('#prices .hint').textContent = c.season.note;
+    var pp = $('#prices .prepay'); if (pp) { pp.hidden = !c.prices.prepay; pp.querySelector('span').textContent = c.prices.prepay || ''; }
     var has = function (p) { return /\d/.test(String(p || '')); };   // строки без цены (ещё не заполнены) не показываем
     var rows = c.prices.rows.filter(function (r) {
       return r.dates && (has(r.price) || (r.slots || []).some(function (x) { return has(x.price); }));
@@ -182,13 +178,14 @@
     accent($('#how h2'), c.how.title);
     setImg($('.how-pic img'), c.prices.incl_photo, c.prices.incl_pos);
     list($('.steps'), c.how.steps, function (x, i) { return '<li>' + ai('step', i) + '<b>' + esc(x.title) + '</b><p>' + esc(x.text) + '</p></li>'; });
-    list($('.tips ul'), c.how.tips, function (t) { return '<li>' + esc(t) + '</li>'; });
+    if (c.how.tips_title) $('.tips summary').textContent = c.how.tips_title;
+    list($('.tips ol'), c.how.tips, function (t) { return typeof t === 'string' ? '<li>' + esc(t) + '</li>' : '<li><b>' + esc(t.title) + '</b> ' + esc(t.text) + '</li>'; });
 
     // герои
     accent($('#heroes h2'), c.heroes.title);
     $('.car-txt').textContent = c.heroes.text;
     list($('.gallery'), c.heroes.photos, function (p) {
-      return '<img src="' + esc(p.src) + '" alt="' + esc(p.alt) + '" loading="lazy"' + (p.pos ? ' style="object-position:' + esc(p.pos) + '"' : '') + '>';
+      return '<img src="' + esc(p.src) + '" alt="' + esc(p.alt) + '" data-title="' + esc(p.title || '') + '" data-text="' + esc(p.text || '') + '" loading="lazy"' + (p.pos ? ' style="object-position:' + esc(p.pos) + '"' : '') + '>';
     });
 
     // отзывы

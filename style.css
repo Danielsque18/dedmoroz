@@ -206,7 +206,7 @@ main{overflow-x:clip}
 .tips{margin-top:10px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:4px 22px}
 .tips summary{cursor:pointer;list-style:none;font-weight:700;padding:16px 36px 16px 0;position:relative}
 .tips summary::-webkit-details-marker{display:none}
-.tips ul{margin:0 0 16px;padding:0;list-style:none;display:grid;gap:10px;font-size:15px;color:var(--muted)}
+.tips ul,.tips ol{margin:0 0 16px;padding:0;list-style:none;display:grid;gap:10px;font-size:15px;color:var(--muted)}
 
 /* плюсик раскрытия (вопросы и советы) */
 .tips summary::after,.faq summary::after{content:"+";position:absolute;right:0;top:50%;transform:translateY(-50%);width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(180deg,var(--v500),var(--v700));color:#fff;font-size:20px;font-weight:500;transition:transform .25s}
@@ -409,7 +409,7 @@ h2 em{background-size:200% 100%;background-image:linear-gradient(90deg,var(--v60
   .chip{order:1;margin-bottom:14px;padding:6px 12px;align-self:flex-start}
   .chip .kicker{font-size:12px}
   .hero h1{order:2;font-size:31px}
-  .lead{display:none}
+  .lead{order:3;font-size:17px;margin:2px 0 6px}   /* короткая фраза Насти — показываем и на телефоне */
   .hero-photo{order:3;margin:6px -16px 0;width:calc(100% + 32px)}
   .hero-photo>img{max-height:none}
   .badge-row{top:auto;bottom:22%;left:16px;font-size:13px;padding:4px 12px 4px 4px}
@@ -445,7 +445,7 @@ h2 em{background-size:200% 100%;background-image:linear-gradient(90deg,var(--v60
 .tiles li{counter-increment:none}
 @media (max-width:700px){.tiles li::before{left:12px;top:12px!important;width:38px;height:38px}.tiles li::after{width:22px!important;height:22px!important;top:20px!important;left:20px!important}}
 /* советы: золотые точки вместо эмодзи */
-.tips ul{list-style:none}.tips li{position:relative;padding-left:22px}
+.tips ul,.tips ol{list-style:none}.tips li{position:relative;padding-left:22px}
 .tips li::before{content:"";position:absolute;left:2px;top:.55em;width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,#fbeec2,#d9b25c);box-shadow:0 0 0 3px rgba(217,178,92,.18)}
 /* О нас: Дед Мороз на светящемся постаменте */
 .about-pic{display:flex;align-items:flex-end;justify-content:center}
@@ -630,7 +630,7 @@ h1 em,h2 em,.panel h2 em,.tb h2 em,.contacts h2 em{color:inherit!important;-webk
 }
 @media (min-width:901px){
   .hero-grid{display:flex!important;align-items:center}
-  .hero-in{max-width:560px;flex:none}
+  .hero-in{max-width:640px;flex:none}
 }
 /* фото — прямой фон всего первого экрана (вынесено из сетки) */
 @media (min-width:901px){
@@ -768,3 +768,11 @@ h1 em,h2 em,.panel h2 em,.tb h2 em,.contacts h2 em{color:inherit!important;-webk
   .car-bar{gap:12px}
 }
 @media (prefers-reduced-motion:reduce){.car-item{transition:none}}
+
+/* 24.10 — правки Насти: подпись под фото в карусели, предоплата, советы с заголовками */
+.car-desc{max-width:620px;min-height:3.2em;margin:14px auto 0;text-align:center;font-size:16px;line-height:1.55;color:var(--muted);transition:opacity .3s}
+.car-desc.empty{min-height:0}
+.prepay{display:flex;align-items:center;justify-content:center;gap:8px;margin:10px 0 0;font-weight:700;font-size:15px;color:var(--v700)}
+.prepay svg{width:18px;height:18px}
+.tips li b{color:var(--ink)}
+@media (max-width:700px){.car-desc{font-size:15px;padding:0 4px}}

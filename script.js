@@ -54,7 +54,7 @@ document.documentElement.classList.add('js');
 // 31.12 и 1–2.01 — праздничные надписи; с 3 января до сентября отсчёта нет, стоит обычная надпись.
 (function () {
   var el = document.getElementById('nyDays'); if (!el) return;
-  var cap = el.nextElementSibling, base = { b: '25.12 — 2.01', s: 'приходим каждый день праздников' };
+  var cap = el.nextElementSibling, base = { b: '25.12 — 2.01', s: 'с нетерпением ждём встречи' };
   function plural(d) { return (d % 10 === 1 && d % 100 !== 11) ? 'день' : (d % 10 >= 2 && d % 10 <= 4 && (d % 100 < 10 || d % 100 >= 20)) ? 'дня' : 'дней'; }
   function draw() {
     var now = new Date(Date.now() + (6 * 60 + new Date().getTimezoneOffset()) * 60000);
@@ -64,7 +64,7 @@ document.documentElement.classList.add('js');
     if (m < 8) { el.textContent = base.b; cap.textContent = base.s; return; }
     var today = new Date(now.getFullYear(), m, day);
     var d = Math.round((new Date(now.getFullYear() + 1, 0, 1) - today) / 864e5);
-    el.textContent = d + ' ' + plural(d); cap.textContent = 'до Нового года — с 25.12 по 2.01 приходим каждый день';
+    el.textContent = d + ' ' + plural(d); cap.textContent = 'до Нового года — с нетерпением ждём встречи';
   }
   draw(); setInterval(draw, 60 * 60 * 1000);
 })();
@@ -72,11 +72,12 @@ document.documentElement.classList.add('js');
 // Наши герои: карусель — фото одной высоты в своей форме, текущее по центру
 (function () {
   var car = document.getElementById('car'), track = car.querySelector('.car-track'), g = document.getElementById('gallery');
-  var cnt = document.querySelector('.car-count'), title = document.querySelector('.car-title'), i = 0, items = [];
+  var cnt = document.querySelector('.car-count'), title = document.querySelector('.car-title'), desc = document.querySelector('.car-desc'), i = 0, items = [];
   function pad(n) { return (n < 10 ? '0' : '') + n; }
   function build() {
     track.innerHTML = [].map.call(g.querySelectorAll('img'), function (im, k) {
-      return '<button type="button" class="car-item" data-k="' + k + '"><img src="' + im.getAttribute('src') + '" alt="' + im.alt.replace(/"/g, '&quot;') + '"' + (k > 2 ? ' loading="lazy"' : '') + '></button>';
+      var q = function (t) { return (t || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;'); };
+      return '<button type="button" class="car-item" data-k="' + k + '" data-title="' + q(im.dataset.title) + '" data-text="' + q(im.dataset.text) + '"><img src="' + im.getAttribute('src') + '" alt="' + q(im.alt) + '"' + (k > 2 ? ' loading="lazy"' : '') + '></button>';
     }).join('');
     items = [].slice.call(track.children); show(0, true);
   }
@@ -87,7 +88,8 @@ document.documentElement.classList.add('js');
     var it = items[i];
     car.scrollTo({ left: it.offsetLeft - (car.clientWidth - it.offsetWidth) / 2, behavior: instant ? 'auto' : 'smooth' });
     cnt.innerHTML = '<b>' + pad(i + 1) + '</b>/' + items.length;
-    title.textContent = it.querySelector('img').alt;
+    title.textContent = it.dataset.title || it.querySelector('img').alt;
+    if (desc) { desc.textContent = it.dataset.text || ''; desc.classList.toggle('empty', !it.dataset.text); }
   }
   window.DM_CAR_NEXT = function () { show(i + 1); };
   document.querySelector('.car-prev').addEventListener('click', function () { show(i - 1); });
