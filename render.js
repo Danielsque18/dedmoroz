@@ -58,7 +58,7 @@
 
   // картинка из нейросети для карточки (img/ai/<имя>-<номер>.webp); пока файла нет — остаётся иконка
   function ai(name, i) {
-    return '<img class="ai" src="img/ai/' + name + '-' + (i + 1) + '.webp?v=2" alt="" onload="this.parentNode.classList.add(\'ai-on\')" onerror="this.remove()">';
+    return '<img class="ai" src="img/ai/' + name + '-' + (i + 1) + '.webp?v=4" alt="" onload="this.parentNode.classList.add(\'ai-on\')" onerror="this.remove()">';
   }
 
   // последнее слово заголовка — цветом, как на референсе

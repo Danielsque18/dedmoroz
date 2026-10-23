@@ -776,3 +776,14 @@ h1 em,h2 em,.panel h2 em,.tb h2 em,.contacts h2 em{color:inherit!important;-webk
 .prepay svg{width:18px;height:18px}
 .tips li b{color:var(--ink)}
 @media (max-width:700px){.car-desc{font-size:15px;padding:0 4px}}
+
+/* 24.10 — Настя: главное фото снова на весь экран, как в первый раз, но лицо не режем по подбородку.
+   Кокошник начинается на 4% высоты кадра, подбородок — около 52%: держим кадр у верхнего края */
+@media (min-width:901px){
+  .hero-photo{left:0!important;width:100%!important;-webkit-mask-image:none!important;mask-image:none!important}
+  .hero-photo>img{object-position:64% 8%!important}
+  .hero-photo::after{background:linear-gradient(90deg,rgba(20,7,49,.92) 0%,rgba(20,7,49,.78) 26%,rgba(20,7,49,.35) 46%,rgba(20,7,49,0) 60%),linear-gradient(0deg,rgba(20,7,49,.9) 0%,rgba(20,7,49,0) 26%),linear-gradient(180deg,rgba(20,7,49,.45) 0%,rgba(20,7,49,0) 18%)!important}
+}
+/* широкие мониторы: первый экран выше, чтобы лицо не обрезалось; узкие ноутбуки: текст уже, чтобы не заходил на лицо */
+@media (min-width:901px){.hero{min-height:min(calc(100vh - 90px),max(780px,40vw))}.hero-grid{min-height:min(calc(100vh - 120px),max(720px,38vw))!important}}
+@media (min-width:901px) and (max-width:1200px){.hero-in{max-width:500px!important}.hero h1{font-size:44px}.quick-prices{max-width:470px}}
