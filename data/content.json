@@ -1,5 +1,5 @@
 {
-  "rev": "20261024c",
+  "rev": "20261024e",
   "season": {
     "from": "25 декабря",
     "to": "2 января",
@@ -8,7 +8,7 @@
   "hero": {
     "title": "Сибирская служба Деда Мороза",
     "lead": "Подарите себе и своим детям сказку",
-    "photo": "img/hero-sneg.jpg?v=2",
+    "photo": "img/hero-wide.jpg",
     "photo_pos": "",
     "round": "img/sneg-gold.jpg",
     "sticker": "Только наши актёры"
@@ -30,7 +30,7 @@
   "about": {
     "title": "Добрая семейная традиция",
     "text": "Год за годом возвращаемся в любимые семьи и становимся частью их новогодней истории.",
-    "photo": "img/cut-ded.webp",
+    "photo": "img/cut-sneg-about.webp",
     "photo_pos": "",
     "badge": "с 2006 года",
     "pluses": [

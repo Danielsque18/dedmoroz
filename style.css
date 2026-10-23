@@ -409,7 +409,7 @@ h2 em{background-size:200% 100%;background-image:linear-gradient(90deg,var(--v60
   .chip{order:1;margin-bottom:14px;padding:6px 12px;align-self:flex-start}
   .chip .kicker{font-size:12px}
   .hero h1{order:2;font-size:31px}
-  .lead{order:3;font-size:17px;margin:2px 0 6px}   /* короткая фраза Насти — показываем и на телефоне */
+  .lead{order:3;font-size:17px;margin:2px 0 6px;text-align:left;align-self:stretch;max-width:none}   /* короткая фраза Насти — показываем и на телефоне */
   .hero-photo{order:3;margin:6px -16px 0;width:calc(100% + 32px)}
   .hero-photo>img{max-height:none}
   .badge-row{top:auto;bottom:22%;left:16px;font-size:13px;padding:4px 12px 4px 4px}
@@ -787,3 +787,9 @@ h1 em,h2 em,.panel h2 em,.tb h2 em,.contacts h2 em{color:inherit!important;-webk
 /* широкие мониторы: первый экран выше, чтобы лицо не обрезалось; узкие ноутбуки: текст уже, чтобы не заходил на лицо */
 @media (min-width:901px){.hero{min-height:min(calc(100vh - 90px),max(780px,40vw))}.hero-grid{min-height:min(calc(100vh - 120px),max(720px,38vw))!important}}
 @media (min-width:901px) and (max-width:1200px){.hero-in{max-width:500px!important}.hero h1{font-size:44px}.quick-prices{max-width:470px}}
+/* 24.10 — новая широкая фотография от Насти (2,2:1): лицо около 56% по ширине, подбородок ~53% по высоте.
+   Кадр прижат влево, чтобы лицо уходило правее текста; по высоте фото почти не режется */
+@media (min-width:901px){.hero-photo>img{object-position:0% 10%!important}}
+@media (max-width:900px){.hero-photo>img{object-position:56% 30%!important}}
+/* 24.10 — Снегурочка в «О нас»: мех справа не должен вылезать за арку на компьютере */
+@media (min-width:1081px){.about-pic img{max-width:94%!important}}
